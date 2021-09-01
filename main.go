@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -22,6 +23,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+
 	mskLocation = location
 }
 
@@ -37,25 +39,25 @@ func main() {
 
 	cursor, err := getCandles(*ticker, "1", *from, "")
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 
 	csvWriter := csv.NewWriter(os.Stdout)
 	if err := csvWriter.Write(cursor.GetHeaders()); err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 
 	for cursor.Next() {
 		if err := csvWriter.Write(cursor.GetRow()); err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
 	}
 
 	if err := cursor.Err(); err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 
@@ -81,10 +83,12 @@ func (c *cursor) Next() bool {
 			c.err = err
 			return false
 		}
+
 		if c.cf.IsEmpty() {
 			c.done = true
 			return false
 		}
+
 		c.cf.SetNextRow() // set on first row (with index 0)
 	}
 
@@ -109,6 +113,7 @@ func PrepareCursor(cf *chunkFetcher) (*cursor, error) {
 	if err := cf.FetchNext(0); err != nil {
 		return nil, err
 	}
+
 	return &cursor{cf: cf}, nil
 }
 
@@ -128,6 +133,7 @@ func (cf chunkFetcher) GetChunkRow() []string {
 	if cf.chunkOffset >= 0 && cf.chunkOffset < cf.chunkSize {
 		return cf.getChunkRow(cf.chunkOffset)
 	}
+
 	return nil
 }
 
@@ -157,6 +163,7 @@ func (cf chunkFetcher) IsEmpty() bool {
 
 func getCandles(security, interval, from string, to string) (*cursor, error) {
 	endpoint := fmt.Sprintf("/engines/stock/markets/shares/securities/%s/candles.json", security)
+
 	reqURL, err := url.Parse(moexISSURL + endpoint)
 	if err != nil {
 		return nil, err
@@ -218,6 +225,7 @@ func parseMoexType(in interface{}, moexType string) interface{} {
 			in = t.Format(time.RFC3339)
 		}
 	}
+
 	return in
 }
 
@@ -229,10 +237,12 @@ func setQueryParam(u *url.URL, k string, v string) {
 
 func setNonEmptyQueryParams(u *url.URL, p map[string]string) {
 	q := u.Query()
+
 	for k, v := range p {
 		if len(v) > 0 {
 			q.Set(k, fmt.Sprint(v))
 		}
 	}
+
 	u.RawQuery = q.Encode()
 }
