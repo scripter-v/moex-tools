@@ -57,7 +57,7 @@ linters-settings:
 
   cyclop:
     # the maximal code complexity to report
-    max-complexity: 10
+    max-complexity: 20
     # the maximal average package complexity. If it's higher than 0.0 (float) the check is enabled (default 0.0)
     package-average: 0.0
     # should ignore tests (default false)
@@ -93,7 +93,7 @@ linters-settings:
 
   gocognit:
     # minimal code complexity to report, 30 by default (but we recommend 10-20)
-    min-complexity: 10
+    min-complexity: 20
 
   nestif:
     # minimal complexity of if statements to report, 5 by default
@@ -119,7 +119,7 @@ linters-settings:
 
   gocyclo:
     # minimal code complexity to report, 30 by default (but we recommend 10-20)
-    min-complexity: 10
+    min-complexity: 20
 
   godox:
     # report any comments starting with keywords, this is useful for TODO or FIXME comments that
@@ -306,7 +306,6 @@ linters:
     - gocognit
     - goconst
     - gocritic
-    - gocyclo
     - godot
     - godox
     - goerr113
@@ -357,6 +356,7 @@ linters:
 #    - exhaustivestruct # Not needed
 #    - gochecknoglobals # Not needed
 #    - gochecknoinits # Not needed
+#    - gocyclo # cyclop used instead
 
 issues:
   # Excluding configuration per-path, per-linter, per-text and per-source
